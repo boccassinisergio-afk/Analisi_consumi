@@ -56,5 +56,5 @@ SELECT id_utente, fascia, importo
 FROM costi_per_fascia
 QUALIFY ROW_NUMBER() OVER (
     PARTITION BY id_utente
-    ORDER BY importo DESC
+    ORDER BY importo DESC, kwh_consumati DESC
 ) = 1;
