@@ -46,12 +46,23 @@ df_fascia.rename(columns={'fascia':'fascia_piu_costosa','importo':'importo_fasci
 df_definitivo = df_temp.merge(df_fascia, on='id_utente')
 
 # creo il report vero e proprio iterando su df_definitivo per stampare un blocco per ogni utente
+# il primo for crea un id per ogni utente e un unica riga contenente tutte le info in unico blocco
+# es. (101,    id_utente fascia  kwh_consumati  importo  kwh_picco fascia_piu_costosa  importo_fascia_piu_costosa  kwh_fascia_piu_costosa 0  101  F1 ...)
+# il secondo for itera su ogni riga di ogni utente accedendo ai singoli valori
+
+stringhe_da_formattare = []
 
 for id, gruppo in df_definitivo.groupby('id_utente'):
+    stringa_singola = f'Utente {id}\n'
+    
     for indice, riga in gruppo.iterrows():
-        print(f"Utente: {indice}\n Fascia {riga['fascia']}: {riga['kwh_consumati']} → €{riga['importo']}")
-        print("")
-        print(f"Picco di consumo: {gruppo['kwh_picco'].iloc[0]} kwh")
-        print(f"Fascia più costosa: {gruppo['fascia_piu_costosa'].iloc[0]} → € {gruppo['importo_fascia_piu_costosa'].iloc[0]}")
+        stringa_singola += f"Fascia {riga['fascia']}: {riga['kwh_consumati']:.2f} → €{riga['importo']:.2f}\n"
+    
+    stringa_singola += f"Picco di consumo: {gruppo['kwh_picco'].iloc[0]:.2f} kwh\nFascia più costosa: {gruppo['fascia_piu_costosa'].iloc[0]} → €{gruppo['importo_fascia_piu_costosa'].iloc[0]:.2f}"    
         
-        
+    stringhe_da_formattare.append(stringa_singola)
+    
+print('\n\n'.join(stringhe_da_formattare))    
+                
+# con gruppo['kwh_picco'].iloc[0]: prima seleziono la colonna per nome (leggibile, esplicito), poi prendo il primo valore per posizione, 
+# essendo valori uguali e ripetuti per ogni riga singola dello stesso utente
