@@ -29,7 +29,8 @@ WITH costi_per_fascia AS (
     SELECT
         c.id_utente,
         t.fascia,
-        SUM(c.kwh_consumati * t.costo_kwh) AS importo
+        SUM(c.kwh_consumati * t.costo_kwh) AS importo,
+        SUM(c.kwh_consumati) AS consumo
     FROM energia_consumi.consumi AS c
     LEFT JOIN energia_consumi.tariffe AS t 
         ON (
@@ -52,9 +53,9 @@ WITH costi_per_fascia AS (
         t.fascia 
 )
 
-SELECT id_utente, fascia, importo
+SELECT id_utente, fascia, importo, consumo
 FROM costi_per_fascia
 QUALIFY ROW_NUMBER() OVER (
     PARTITION BY id_utente
-    ORDER BY importo DESC, kwh_consumati DESC
+    ORDER BY importo DESC, consumo DESC
 ) = 1;

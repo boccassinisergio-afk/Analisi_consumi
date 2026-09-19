@@ -1,6 +1,7 @@
 # inizializzazione bigquery
 # da utilizzare sempre ad ogni script che interagisce con bigquery
 
+import matplotlib as plt
 from google.cloud import bigquery
 
 client = bigquery.Client()
@@ -56,7 +57,7 @@ for id, gruppo in df_definitivo.groupby('id_utente'):
     stringa_singola = f'Utente {id}\n'
     
     for indice, riga in gruppo.iterrows():
-        stringa_singola += f"Fascia {riga['fascia']}: {riga['kwh_consumati']:.2f} → €{riga['importo']:.2f}\n"
+        stringa_singola += f"Fascia {riga['fascia']}: {riga['kwh_consumati']:.2f} → €{riga['importo']:.2f}\n\n"
     
     stringa_singola += f"Picco di consumo: {gruppo['kwh_picco'].iloc[0]:.2f} kwh\nFascia più costosa: {gruppo['fascia_piu_costosa'].iloc[0]} → €{gruppo['importo_fascia_piu_costosa'].iloc[0]:.2f}"    
         
@@ -66,3 +67,14 @@ print('\n\n'.join(stringhe_da_formattare))
                 
 # con gruppo['kwh_picco'].iloc[0]: prima seleziono la colonna per nome (leggibile, esplicito), poi prendo il primo valore per posizione, 
 # essendo valori uguali e ripetuti per ogni riga singola dello stesso utente
+
+# creo una copia del df con .pivot per la generazione del grafico tenendo solo i valori che mi servono + nuova col 'importo_totale'
+# columns= colonna da spacchettare in piu colonne dal df originale, values= colonna che fornisce valori da mettere in griglia
+
+df_pivot = df_definitivo.pivot(index=[['id_utente', 'nome']], columns='fascia', values='importo')
+
+# aggiungo colonna col il totale, mi servira' da inviare alla griglia come etichetta numerica
+# axis=1 indica di sommare per righe, non per colonna come di default (axis=0)
+
+df_pivot['importo_totale'] = df_pivot[['F1', 'F2', 'F3']].sum(axis=1)
+
