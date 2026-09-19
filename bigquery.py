@@ -1,7 +1,7 @@
 # inizializzazione bigquery
 # da utilizzare sempre ad ogni script che interagisce con bigquery
 
-import matplotlib as plt
+import pyplot from matplotlib as plt
 import pandas as pd
 from google.cloud import bigquery
 
@@ -72,7 +72,7 @@ print('\n\n'.join(stringhe_da_formattare))
 # creo una copia del df con .pivot per la generazione del grafico tenendo solo i valori che mi servono + nuova col 'importo_totale'
 # columns= colonna da spacchettare in piu colonne dal df originale, values= colonna che fornisce valori da mettere in griglia
 
-df_pivot = df_definitivo.pivot(index=[['id_utente', 'nome']], columns='fascia', values='importo').reset_index()
+df_pivot = df_definitivo.pivot(index=['id_utente', 'nome'], columns='fascia', values='importo').reset_index()
 
 # aggiungo colonna col il totale, mi servira' da inviare alla griglia come etichetta numerica
 # axis=1 indica di sommare per righe, non per colonna come di default (axis=0)
