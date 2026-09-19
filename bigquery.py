@@ -2,6 +2,7 @@
 # da utilizzare sempre ad ogni script che interagisce con bigquery
 
 import matplotlib as plt
+import pandas as pd
 from google.cloud import bigquery
 
 client = bigquery.Client()
@@ -71,10 +72,23 @@ print('\n\n'.join(stringhe_da_formattare))
 # creo una copia del df con .pivot per la generazione del grafico tenendo solo i valori che mi servono + nuova col 'importo_totale'
 # columns= colonna da spacchettare in piu colonne dal df originale, values= colonna che fornisce valori da mettere in griglia
 
-df_pivot = df_definitivo.pivot(index=[['id_utente', 'nome']], columns='fascia', values='importo')
+df_pivot = df_definitivo.pivot(index=[['id_utente', 'nome']], columns='fascia', values='importo').reset_index()
 
 # aggiungo colonna col il totale, mi servira' da inviare alla griglia come etichetta numerica
 # axis=1 indica di sommare per righe, non per colonna come di default (axis=0)
 
 df_pivot['importo_totale'] = df_pivot[['F1', 'F2', 'F3']].sum(axis=1)
 
+df_bottom = df_pivot[['F1', 'F2', 'F3']].cumsum(axis=1).shift(1, axis=1, fill_value=0)
+
+# due cicli fratelli, allo stesso livello, uno che disegna le barre (3 giri, uno per fascia) 
+# e uno separato che scrive le etichette (3 giri, uno per utente, senza ripetizioni)
+
+for fascia in df_pivot[['F1', 'F2', 'F3']]:
+    plt.bar(x=df_pivot['nome'], height=df_pivot[fascia], bottom=df_bottom[fascia], label=fascia)
+for indice, riga in df_pivot.iterrows():
+    plt.text(riga['nome'], riga['importo_totale'], f"{riga['importo_totale']:.2f}")
+plt.legend()
+plt.savefig('bar_chart.png')
+plt.show()
+    
