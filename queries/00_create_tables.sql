@@ -1,10 +1,10 @@
-CREATE SCHEMA IF NOT EXISTS energia_consumi
+CREATE SCHEMA IF NOT EXISTS energia_consumi;
 
-CREATE TABLE energia_consumi.utenti (id_utente INT64 PRIMARY KEY, nome STRING );
+CREATE OR REPLACE TABLE energia_consumi.utenti (id_utente INT64 PRIMARY KEY NOT ENFORCED, nome STRING );
 
-CREATE TABLE energia_consumi.consumi (id_consumo INT64 PRIMARY KEY, id_utente INT64, timestamp TIMESTAMP, kwh_consumati NUMERIC, CONSTRAINT fk_consumi_utenti FOREIGN KEY (id_utente) REFERENCES utenti(id_utente));
+CREATE OR REPLACE TABLE energia_consumi.consumi (id_consumo INT64 PRIMARY KEY NOT ENFORCED, id_utente INT64, timestamp TIMESTAMP, kwh_consumati NUMERIC, CONSTRAINT fk_consumi_utenti FOREIGN KEY (id_utente) REFERENCES energia_consumi.utenti(id_utente) NOT ENFORCED);
 
-CREATE TABLE energia_consumi.tariffe (fascia STRING PRIMARY KEY, ora_inizio INT64, ora_fine INT64, costo_kwh NUMERIC);
+CREATE OR REPLACE TABLE energia_consumi.tariffe (fascia STRING PRIMARY KEY NOT ENFORCED, ora_inizio INT64, ora_fine INT64, costo_kwh NUMERIC);
 
 INSERT INTO energia_consumi.utenti ( id_utente, nome ) VALUES (1, 'Sergio Rossi'), (2, 'Mariantonia Verdi'), (3, 'Rosanna Bianchi');
 INSERT INTO energia_consumi.consumi ( id_consumo, id_utente, timestamp, kwh_consumati ) VALUES (1, 1, '2026-01-05 07:15:00', 0.8),

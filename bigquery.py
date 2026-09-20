@@ -14,12 +14,6 @@ with open('queries/00_create_tables.sql', 'r') as file:
     create_tables = client.query(contenuto)
     result = create_tables.result()
     
-# creo il riferimento al dataset e dopo lo recupero con get_dataset
-
-dataset_ref = client.dataset('energia_consumi')
-
-dataset = client.get_dataset(dataset_ref)
-    
 # apro il file delle queries, splitto con ; per separare le due SELECT presenti e ripulisco i risultati, assegnando poi a due DF
 
 with open('queries/01_analisi_consumi_e_prezzi.sql', 'r') as file:
