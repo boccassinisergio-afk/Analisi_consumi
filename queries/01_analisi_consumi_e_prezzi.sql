@@ -1,6 +1,7 @@
 SELECT
     c.id_consumo,
     c.id_utente,
+    u.nome,
     c.timestamp,
     c.kwh_consumati,
     t.fascia,
@@ -23,7 +24,9 @@ LEFT JOIN energia_consumi.tariffe AS t
                 OR EXTRACT(HOUR FROM c.timestamp) < t.ora_fine
             )
         )
-    );
+    )
+    LEFT JOIN energia_consumi.utenti AS u
+        ON c.id_utente = u.id_utente;
 
 WITH costi_per_fascia AS (
     SELECT

@@ -1,7 +1,7 @@
 # inizializzazione bigquery
 # da utilizzare sempre ad ogni script che interagisce con bigquery
 
-import pyplot from matplotlib as plt
+from matplotlib import pyplot as plt
 import pandas as pd
 from google.cloud import bigquery
 
@@ -32,7 +32,7 @@ df_fascia = client.query(queries_ripulite[1]).result().to_dataframe()
 
 # totale kWh e importo per ogni combinazione utente+fascia
 
-df_bolletta = df_picco.groupby(['id_utente', 'fascia']).agg({'kwh_consumati':'sum', 'importo':'sum'}).reset_index()
+df_bolletta = df_picco.groupby(['id_utente', 'nome', 'fascia']).agg({'kwh_consumati':'sum', 'importo':'sum'}).reset_index()
 df_pulito = df_picco[['id_utente', 'kwh_picco']].drop_duplicates(subset=['id_utente'])
 
 # merge tra i primi due DF
@@ -55,7 +55,7 @@ df_definitivo = df_temp.merge(df_fascia, on='id_utente')
 stringhe_da_formattare = []
 
 for id, gruppo in df_definitivo.groupby('id_utente'):
-    stringa_singola = f'Utente {id}\n'
+    stringa_singola = f"Utente {gruppo['nome'].iloc[0]}\n"
     
     for indice, riga in gruppo.iterrows():
         stringa_singola += f"Fascia {riga['fascia']}: {riga['kwh_consumati']:.2f} → €{riga['importo']:.2f}\n\n"
